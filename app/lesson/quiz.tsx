@@ -224,7 +224,17 @@ export const Quiz = ({
             <h1 className="text-center text-lg font-bold text-neutral-700 lg:text-start lg:text-3xl">
               {title}
             </h1>
-
+            {challenge.videoSrc && (
+              <div className="rounded-2xl overflow-hidden border">
+                <video
+                  src={challenge.videoSrc}
+                  className="w-full h-auto"
+                  controls
+                  playsInline
+                  loop
+                />
+              </div>
+            )}
             <div>
               {challenge.type === "ASSIST" && (
                 <QuestionBubble question={challenge.question} />
