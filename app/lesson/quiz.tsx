@@ -95,6 +95,31 @@ export const Quiz = ({
   };
 
   const onContinue = () => {
+    // For VIDEO type, skip answer selection requirement
+    if (challenge.type === "VIDEO") {
+      startTransition(() => {
+        upsertChallengeProgress(challenge.id)
+          .then((response) => {
+            if (response?.error === "hearts") {
+              openHeartsModal();
+              return;
+            }
+
+            void correctControls.play();
+            setPercentage((prev) => prev + 100 / challenges.length);
+
+            // This is a practice
+            if (initialPercentage === 100) {
+              setHearts((prev) => Math.min(prev + 1, MAX_HEARTS));
+            }
+
+            onNext();
+          })
+          .catch(() => toast.error("Something went wrong. Please try again."));
+      });
+      return;
+    }
+
     if (!selectedOption) return;
 
     if (status === "wrong") {
@@ -229,32 +254,35 @@ export const Quiz = ({
                 <video
                   src={challenge.videoSrc}
                   className="w-full h-auto"
-                  controls
+                  controls={challenge.type !== "VIDEO"}
+                  autoPlay={challenge.type === "VIDEO"}
                   playsInline
                   loop
                 />
               </div>
             )}
-            <div>
-              {challenge.type === "ASSIST" && (
-                <QuestionBubble question={challenge.question} />
-              )}
+            {challenge.type !== "VIDEO" && (
+              <div>
+                {challenge.type === "ASSIST" && (
+                  <QuestionBubble question={challenge.question} />
+                )}
 
-              <Challenge
-                options={options}
-                onSelect={onSelect}
-                status={status}
-                selectedOption={selectedOption}
-                disabled={pending}
-                type={challenge.type}
-              />
-            </div>
+                <Challenge
+                  options={options}
+                  onSelect={onSelect}
+                  status={status}
+                  selectedOption={selectedOption}
+                  disabled={pending}
+                  type={challenge.type}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       <Footer
-        disabled={pending || !selectedOption}
+        disabled={challenge.type !== "VIDEO" && (pending || !selectedOption)}
         status={status}
         onCheck={onContinue}
       />

@@ -25,6 +25,10 @@ export const ChallengeCreate = () => {
               id: "ASSIST",
               name: "ASSIST",
             },
+            {
+              id: "VIDEO",
+              name: "VIDEO",
+            },
           ]}
         />
         <ReferenceInput source="lessonId" reference="lessons" />
