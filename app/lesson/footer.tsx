@@ -23,22 +23,22 @@ export const Footer = ({
   return (
     <footer
       className={cn(
-        "h-[100px] border-t-2 lg:h-[140px]",
+        "h-[60px] border-t-2 lg:h-[70px]",
         status === "correct" && "border-transparent bg-green-100",
         status === "wrong" && "border-transparent bg-rose-100"
       )}
     >
-      <div className="mx-auto flex h-full max-w-[1140px] items-center justify-between px-6 lg:px-10">
+      <div className="mx-auto flex h-full max-w-[1140px] items-center justify-between px-4 lg:px-6">
         {status === "correct" && (
           <div className="flex items-center text-base font-bold text-green-500 lg:text-2xl">
-            <CheckCircle className="mr-4 h-6 w-6 lg:h-10 lg:w-10" />
+            <CheckCircle className="mr-2 h-5 w-5 lg:h-6 lg:w-6" />
             Nicely done!
           </div>
         )}
 
         {status === "wrong" && (
           <div className="flex items-center text-base font-bold text-rose-500 lg:text-2xl">
-            <XCircle className="mr-4 h-6 w-6 lg:h-10 lg:w-10" />
+            <XCircle className="mr-2 h-5 w-5 lg:h-6 lg:w-6" />
             Try again.
           </div>
         )}
@@ -46,7 +46,8 @@ export const Footer = ({
         {status === "completed" && (
           <Button
             variant="default"
-            size={isMobile ? "sm" : "lg"}
+            size={isMobile ? "sm" : "default"}
+            className="h-8 text-sm lg:h-10 lg:text-base"
             onClick={() => (window.location.href = `/lesson/${lessonId}`)}
           >
             Practice again
@@ -56,9 +57,9 @@ export const Footer = ({
         <Button
           disabled={disabled}
           aria-disabled={disabled}
-          className="ml-auto"
+          className="ml-auto h-8 text-sm lg:h-10 lg:text-base"
           onClick={onCheck}
-          size={isMobile ? "sm" : "lg"}
+          size={isMobile ? "sm" : "default"}
           variant={status === "wrong" ? "danger" : "secondary"}
         >
           {status === "none" && "Check"}

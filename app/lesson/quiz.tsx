@@ -234,7 +234,7 @@ export const Quiz = ({
       : challenge.question;
 
   return (
-    <>
+    <div>
       {incorrectAudio}
       {correctAudio}
       <Header
@@ -249,43 +249,54 @@ export const Quiz = ({
             <h1 className="text-center text-lg font-bold text-neutral-700 lg:text-start lg:text-3xl">
               {title}
             </h1>
-            {challenge.videoSrc && (
-              <div className="rounded-2xl overflow-hidden border">
-                <video
-                  src={challenge.videoSrc}
-                  className="w-full h-auto"
-                  controls={challenge.type !== "VIDEO"}
-                  autoPlay={challenge.type === "VIDEO"}
-                  playsInline
-                  loop
-                />
-              </div>
+            
+            {/* Only show video in QuestionBubble for ASSIST challenges */}
+            {challenge.type === "ASSIST" ? (
+              <QuestionBubble 
+                question={challenge.question} 
+                videoSrc={challenge.videoSrc || undefined}
+              />
+            ) : (
+              // Show video for VIDEO challenges
+              challenge.type === "VIDEO" && challenge.videoSrc && (
+                <div className="rounded-2xl overflow-hidden border">
+                  <video
+                    src={challenge.videoSrc}
+                    className="w-full h-auto"
+                    autoPlay
+                    playsInline
+                    loop
+                  />
+                </div>
+              )
             )}
+            
+            {/* Always render Challenge component except for VIDEO type */}
             {challenge.type !== "VIDEO" && (
-              <div>
-                {challenge.type === "ASSIST" && (
-                  <QuestionBubble question={challenge.question} />
-                )}
-
-                <Challenge
-                  options={options}
-                  onSelect={onSelect}
-                  status={status}
-                  selectedOption={selectedOption}
-                  disabled={pending}
-                  type={challenge.type}
-                />
-              </div>
+              <Challenge
+                options={options}
+                onSelect={onSelect}
+                status={status}
+                selectedOption={selectedOption}
+                disabled={pending}
+                type={challenge.type}
+              />
             )}
           </div>
         </div>
       </div>
 
-      <Footer
-        disabled={challenge.type !== "VIDEO" && (pending || !selectedOption)}
-        status={status}
-        onCheck={onContinue}
-      />
-    </>
+      <div className="fixed bottom-0 left-0 right-0 z-10">
+        <Footer
+          disabled={
+            challenge.type === "VIDEO" 
+              ? false 
+              : pending || !selectedOption
+          }
+          status={status}
+          onCheck={onContinue}
+        />
+      </div>
+    </div>
   );
 };

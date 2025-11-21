@@ -12,21 +12,28 @@ const main = async () => {
   try {
     console.log("Seeding database");
 
-    // Delete all existing data
-    await Promise.all([
-      db.delete(schema.userProgress),
-      db.delete(schema.challenges),
-      db.delete(schema.units),
-      db.delete(schema.lessons),
-      db.delete(schema.courses),
-      db.delete(schema.challengeOptions),
-      db.delete(schema.userSubscription),
-    ]);
+    // Delete all existing data (in sequence to avoid deadlocks)
+    console.log("Deleting existing data...");
+    await db.delete(schema.userProgress);
+    console.log("✓ Deleted user progress");
+    await db.delete(schema.challengeOptions);
+    console.log("✓ Deleted challenge options");
+    await db.delete(schema.challenges);
+    console.log("✓ Deleted challenges");
+    await db.delete(schema.lessons);
+    console.log("✓ Deleted lessons");
+    await db.delete(schema.units);
+    console.log("✓ Deleted units");
+    await db.delete(schema.courses);
+    console.log("✓ Deleted courses");
+    await db.delete(schema.userSubscription);
+    console.log("✓ Deleted user subscriptions");
+    console.log("Database cleared successfully!");
 
     // Insert courses
     const courses = await db
       .insert(schema.courses)
-      .values([{ title: "Spanish", imageSrc: "/es.svg" }])
+      .values([{ title: "Vietnamese Sign Language", imageSrc: "/vnflg.svg" }])
       .returning();
 
     // For each course, insert units
@@ -37,13 +44,13 @@ const main = async () => {
           {
             courseId: course.id,
             title: "Unit 1",
-            description: `Learn the basics of ${course.title}`,
+            description: `The basics of ${course.title}`,
             order: 1,
           },
           {
             courseId: course.id,
             title: "Unit 2",
-            description: `Learn intermediate ${course.title}`,
+            description: `Intermediate ${course.title}`,
             order: 2,
           },
         ])
@@ -70,50 +77,57 @@ const main = async () => {
               {
                 lessonId: lesson.id,
                 type: "VIDEO",
-                question: 'Hello',
-                videoSrc: "test.mp4",
+                question: 'Xin chào',
+                videoSrc: "xinchao.mp4",
                 order: 1,
               },
               {
                 lessonId: lesson.id,
-                type: "SELECT",
-                question: 'Which one of these is "the woman"?',
+                type: "VIDEO",
+                question: 'Gia đình',
+                videoSrc: "fam.mp4",
                 order: 2,
               },
               {
                 lessonId: lesson.id,
-                type: "SELECT",
-                question: 'Which one of these is "the boy"?',
+                type: "ASSIST",
+                question: 'What is this sign mean?',
+                videoSrc:"xinchao.mp4",
                 order: 3,
               },
               {
                 lessonId: lesson.id,
-                type: "ASSIST",
-                question: '"the man"',
+                type: "VIDEO",
+                question: 'Sinh nhật',
+                videoSrc: "sn.mp4",
                 order: 4,
               },
               {
                 lessonId: lesson.id,
-                type: "SELECT",
-                question: 'Which one of these is "the zombie"?',
+                type: "VIDEO",
+                question: 'Khoẻ',
+                videoSrc: "khoe.mp4",
                 order: 5,
               },
               {
                 lessonId: lesson.id,
-                type: "SELECT",
-                question: 'Which one of these is "the robot"?',
+                type: "ASSIST",
+                question: 'What is this sign mean?',
+                videoSrc: "sn.mp4",
                 order: 6,
               },
               {
                 lessonId: lesson.id,
-                type: "SELECT",
-                question: 'Which one of these is "the girl"?',
+                type: "ASSIST",
+                question: 'What sign is this?',
+                videoSrc: "khoe.mp4",
                 order: 7,
               },
               {
                 lessonId: lesson.id,
                 type: "ASSIST",
-                question: '"the zombie"',
+                question: 'What sign is this?',
+                videoSrc: "fam.mp4",
                 order: 8,
               },
             ])
@@ -121,54 +135,56 @@ const main = async () => {
 
           // For each challenge, insert challenge options
           for (const challenge of challenges) {
+            // Challenge 1: Xin chào (Hello)
             if (challenge.order === 1) {
               await db.insert(schema.challengeOptions).values([
                 {
                   challengeId: challenge.id,
                   correct: true,
-                  text: "el hombre",
-                  imageSrc: "/man.svg",
-                  audioSrc: "/es_man.mp3",
+                  text: "Hello",
+                  imageSrc: null,
+                  audioSrc: null,
                 },
                 {
                   challengeId: challenge.id,
                   correct: false,
-                  text: "la mujer",
-                  imageSrc: "/woman.svg",
-                  audioSrc: "/es_woman.mp3",
+                  text: "Goodbye",
+                  imageSrc: null,
+                  audioSrc: null,
                 },
                 {
                   challengeId: challenge.id,
                   correct: false,
-                  text: "el chico",
-                  imageSrc: "/boy.svg",
-                  audioSrc: "/es_boy.mp3",
+                  text: "Thank you",
+                  imageSrc: null,
+                  audioSrc: null,
                 },
               ]);
             }
 
+            // Challenge 2: Gia đình (Family)
             if (challenge.order === 2) {
               await db.insert(schema.challengeOptions).values([
                 {
                   challengeId: challenge.id,
                   correct: true,
-                  text: "la mujer",
-                  imageSrc: "/woman.svg",
-                  audioSrc: "/es_woman.mp3",
+                  text: "Hello",
+                  imageSrc: null,
+                  audioSrc: null,
                 },
                 {
                   challengeId: challenge.id,
                   correct: false,
-                  text: "el chico",
-                  imageSrc: "/boy.svg",
-                  audioSrc: "/es_boy.mp3",
+                  text: "Goodbye",
+                  imageSrc: null,
+                  audioSrc: null,
                 },
                 {
                   challengeId: challenge.id,
                   correct: false,
-                  text: "el hombre",
-                  imageSrc: "/man.svg",
-                  audioSrc: "/es_man.mp3",
+                  text: "Thank you",
+                  imageSrc: null,
+                  audioSrc: null,
                 },
               ]);
             }
@@ -177,148 +193,161 @@ const main = async () => {
               await db.insert(schema.challengeOptions).values([
                 {
                   challengeId: challenge.id,
-                  correct: false,
-                  text: "la mujer",
-                  imageSrc: "/woman.svg",
-                  audioSrc: "/es_woman.mp3",
-                },
-                {
-                  challengeId: challenge.id,
-                  correct: false,
-                  text: "el hombre",
-                  imageSrc: "/man.svg",
-                  audioSrc: "/es_man.mp3",
-                },
-                {
-                  challengeId: challenge.id,
                   correct: true,
-                  text: "el chico",
-                  imageSrc: "/boy.svg",
-                  audioSrc: "/es_boy.mp3",
+                  text: "Xin chào",
+                  imageSrc: null,
+                  audioSrc: null,
+                },
+                {
+                  challengeId: challenge.id,
+                  correct: false,
+                  text: "Tạm biệt",
+                  imageSrc: null,
+                  audioSrc: null,
+                },
+                {
+                  challengeId: challenge.id,
+                  correct: false,
+                  text: "Cảm ơn",
+                  imageSrc: null,
+                  audioSrc: null,
                 },
               ]);
             }
 
+            
+            // Challenge 4: Sinh nhật (Birthday)
             if (challenge.order === 4) {
               await db.insert(schema.challengeOptions).values([
                 {
                   challengeId: challenge.id,
-                  correct: false,
-                  text: "la mujer",
-                  audioSrc: "/es_woman.mp3",
-                },
-                {
-                  challengeId: challenge.id,
                   correct: true,
-                  text: "el hombre",
-                  audioSrc: "/es_man.mp3",
+                  text: "Hello",
+                  imageSrc: null,
+                  audioSrc: null,
                 },
                 {
                   challengeId: challenge.id,
                   correct: false,
-                  text: "el chico",
-                  audioSrc: "/es_boy.mp3",
+                  text: "Goodbye",
+                  imageSrc: null,
+                  audioSrc: null,
+                },
+                {
+                  challengeId: challenge.id,
+                  correct: false,
+                  text: "Thank you",
+                  imageSrc: null,
+                  audioSrc: null,
                 },
               ]);
             }
 
+
+            // Challenge 5: Khoẻ (Healthy/How are you?)
             if (challenge.order === 5) {
               await db.insert(schema.challengeOptions).values([
                 {
                   challengeId: challenge.id,
-                  correct: false,
-                  text: "el hombre",
-                  imageSrc: "/man.svg",
-                  audioSrc: "/es_man.mp3",
-                },
-                {
-                  challengeId: challenge.id,
-                  correct: false,
-                  text: "la mujer",
-                  imageSrc: "/woman.svg",
-                  audioSrc: "/es_woman.mp3",
-                },
-                {
-                  challengeId: challenge.id,
                   correct: true,
-                  text: "el zombie",
-                  imageSrc: "/zombie.svg",
-                  audioSrc: "/es_zombie.mp3",
+                  text: "Hello",
+                  imageSrc: null,
+                  audioSrc: null,
+                },
+                {
+                  challengeId: challenge.id,
+                  correct: false,
+                  text: "Goodbye",
+                  imageSrc: null,
+                  audioSrc: null,
+                },
+                {
+                  challengeId: challenge.id,
+                  correct: false,
+                  text: "Thank you",
+                  imageSrc: null,
+                  audioSrc: null,
                 },
               ]);
             }
 
+            // Challenge 6: What is this sign? (Sinh nhật)
             if (challenge.order === 6) {
               await db.insert(schema.challengeOptions).values([
                 {
                   challengeId: challenge.id,
+                  correct: false,
+                  text: "Giáng sinh",
+                  imageSrc: null,
+                  audioSrc: null,
+                },
+                {
+                  challengeId: challenge.id,
                   correct: true,
-                  text: "el robot",
-                  imageSrc: "/robot.svg",
-                  audioSrc: "/es_robot.mp3",
+                  text: "Sinh nhật",
+                  imageSrc: null,
+                  audioSrc: null,
                 },
                 {
                   challengeId: challenge.id,
                   correct: false,
-                  text: "el zombie",
-                  imageSrc: "/zombie.svg",
-                  audioSrc: "/es_zombie.mp3",
-                },
-                {
-                  challengeId: challenge.id,
-                  correct: false,
-                  text: "el chico",
-                  imageSrc: "/boy.svg",
-                  audioSrc: "/es_boy.mp3",
+                  text: "Năm mới",
+                  imageSrc: null,
+                  audioSrc: null,
                 },
               ]);
             }
 
+            // Challenge 7: What is this sign? (Khoẻ)
             if (challenge.order === 7) {
               await db.insert(schema.challengeOptions).values([
                 {
                   challengeId: challenge.id,
                   correct: true,
-                  text: "la nina",
-                  imageSrc: "/girl.svg",
-                  audioSrc: "/es_girl.mp3",
+                  text: "Tôi khoẻ",
+                  imageSrc: null,
+                  audioSrc: null,
                 },
                 {
                   challengeId: challenge.id,
                   correct: false,
-                  text: "el zombie",
-                  imageSrc: "/zombie.svg",
-                  audioSrc: "/es_zombie.mp3",
+                  text: "Xin chào",
+                  imageSrc: null,
+                  audioSrc: null,
                 },
                 {
                   challengeId: challenge.id,
                   correct: false,
-                  text: "el hombre",
-                  imageSrc: "/man.svg",
-                  audioSrc: "/es_man.mp3",
+                  text: "Tạm biệt",
+                  imageSrc: null,
+                  audioSrc: null,
                 },
               ]);
             }
 
+            // Challenge 8: What is this sign? (Gia đình)
             if (challenge.order === 8) {
               await db.insert(schema.challengeOptions).values([
                 {
                   challengeId: challenge.id,
                   correct: false,
-                  text: "la mujer",
-                  audioSrc: "/es_woman.mp3",
+                  text: "Bạn bè",
+                  imageSrc: null,
+                  audioSrc: null,
                 },
                 {
                   challengeId: challenge.id,
                   correct: true,
-                  text: "el zombie",
-                  audioSrc: "/es_zombie.mp3",
+                  text: "Gia đình",
+                  imageSrc: null,
+                  audioSrc: null,
                 },
                 {
                   challengeId: challenge.id,
                   correct: false,
-                  text: "el chico",
-                  audioSrc: "/es_boy.mp3",
+                  text: "Đồng nghiệp",
+                  imageSrc: null,
+                  audioSrc: null,
                 },
               ]);
             }
